@@ -158,9 +158,11 @@ $formInput.addEventListener('submit', function(e) {
 
     let formValid = validEmail && validName && validLastNames && validPhone;
 
+    console.log(formValid);
+
     // this means that if formSubmit is true, then we go ahead with the submit.
     if ( formValid ) {
-
+        this.submit();
     }
 
 });

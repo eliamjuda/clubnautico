@@ -114,6 +114,7 @@ input, select {
     min-height: 50px;
     width: 100%;
     text-transform: uppercase;
+    cursor: pointer;
 }
 
 small {
