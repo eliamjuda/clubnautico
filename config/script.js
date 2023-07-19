@@ -142,8 +142,27 @@ function checkEmail() {
     return valid;
 }
 
+// Submit function
+
 $formInput.addEventListener('submit', function(e) {
+
     e.preventDefault();
+
+    //If formValid returns true, it means that all the check functions returned true. 
+    // The form is validated and has no errors, so we can proceed with the submit.
+
+    let validEmail = checkEmail(),
+        validName = checkName(),
+        validLastNames = checkLastNames(),
+        validPhone = checkPhone();
+
+    let formValid = validEmail && validName && validLastNames && validPhone;
+
+    // this means that if formSubmit is true, then we go ahead with the submit.
+    if ( formValid ) {
+
+    }
+
 });
 
 
@@ -166,4 +185,6 @@ $formInput.addEventListener('blur', function (e) {
     }
 
 }, true );
+
+
 
