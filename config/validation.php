@@ -1,5 +1,5 @@
 <?php 
-
+    //Este es un comentario
     // Esta es una función de validación, en la que le paso esos 4 parámetros que tiene que validar, los 4 son Strings
 
     function Validation($nombre, $apellidos, $telefono, $correo) {
