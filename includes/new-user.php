@@ -1,7 +1,6 @@
 <?php 
 
     require dirname(__DIR__) . "../db.php";
-    require dirname(__DIR__). "../config/validation.php";
 
     if ( $_POST ) {
 
@@ -14,7 +13,27 @@
         $es_duenio = 0;
         $membresia = 0;
 
-        Validation($nombre, $apellidos, $telefono, $correo);
+        if ( strlen($telefono) > 10 || strlen($telefono) < 10 ) {
+            exit;
+        }
+
+        if ( strlen($nombre) > 30) {
+            exit;
+        }
+
+        if ( strlen($apellidos) > 60 ) {
+            exit;
+        }
+
+        if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+            exit;
+        }
+
+        $telefono = preg_replace('/\D/', '', $telefono);
+
+        if (!preg_match('/^[0-9]{10}$/', $telefono)) {
+            exit;
+        }
 
         if ( $duenio_select === 'es_duenio' ){
             $es_duenio = 1;
@@ -43,7 +62,6 @@
     }
 
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -99,6 +117,7 @@
             <input type="submit" value="Registrar socio">
         </form>
     </div>
+    <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
     <script async src="../config/script.js"></script>
 
 </body>

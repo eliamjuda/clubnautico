@@ -143,8 +143,7 @@ function checkEmail() {
 }
 
 // Submit function
-
-$formInput.addEventListener('submit', function(e) {
+$formInput.addEventListener("submit", function(e) {
 
     e.preventDefault();
 
@@ -162,11 +161,75 @@ $formInput.addEventListener('submit', function(e) {
 
     // this means that if formSubmit is true, then we go ahead with the submit.
     if ( formValid ) {
-        this.submit();
+
+        let correo = $correo.value.trim();
+        let telefono = $telefono.value.trim();
+
+        //we get the email and phone to send both to PHP file
+        
+        /*
+            INFO ABOUT AJAX REQUEST
+
+            Without jQuery, the request needs to be made in the following way
+
+            -Need to create a XMLHttpRequest object
+                
+                let objct = new XMLHttpRequest();
+
+            -then make the request where specifies the type of request
+            method: the type of request: GET or POST
+            url: the server (file) location
+            async: true (asynchronous) or false (synchronous)
+                
+                objct.open(method,url,async);
+
+            -Finally we send the request
+
+                objct.send();// In this we are'nt sending any data
+                
+                objct.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//encode the data that will be sent to the server from the browser
+                objct.send(data);//after encode the data we send the request
+        */
+
+       //we need to import JQuery to simplify the AJAX request
+        
+        //
+        $.ajax({
+            //url: the server (file) location
+            url: '../includes/email-check.php',
+            //the type of request: GET or POST
+            type: 'POST',
+            //Data to be sent to the server.
+            // int this case contentType (default: 'application/x-www-form-urlencoded; charset=UTF-8') is included by default
+            // also async (default: true) is included by default
+            data: {correo, telefono},
+
+            //In this case if the request was successful execute the function containing
+            //-response is the JSON that we get from the POST request
+            success: function(response){
+
+                var jsonData = JSON.parse(response);
+                console.log(jsonData);
+
+                //if JSON isn't empty means that exist other user with the same email o phone
+                if(jsonData.length !== 0){//Other option can be this line jQuery.isEmptyObject(jsonData) in if statement
+                    console.log("Este usuario ya existe");
+                }else{
+                    console.log("Este usuario esta disponible");
+                    $formInput.submit();
+                }
+            },
+            //Finally if the request was not succesfull we send the error to the console
+            error: function(jqXHR,textStatus, errorThrown){
+                console.error("AJAX Error:",textStatus,errorThrown);
+            }
+        });
+
+        
+
     }
 
 });
-
 
 $formInput.addEventListener('blur', function (e) {
     
@@ -186,6 +249,7 @@ $formInput.addEventListener('blur', function (e) {
         checkEmail();
     }
 
+    e.preventDefault();
 }, true );
 
 

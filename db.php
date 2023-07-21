@@ -1,6 +1,6 @@
 <?php
-
-    $server = "localhost:33065";
+    //Change the port that you need
+    $server = "localhost:3306";
     $user = "root";
     $password = "";
     $database = "clubnautico";
