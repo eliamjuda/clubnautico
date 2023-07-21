@@ -92,7 +92,7 @@ function checkLastNames() {
 
 }
 
-function checkPhone() {
+function checkPhone(phoneData) {
     
     const MIN = 10, MAX = 11;
     let valid = false;
@@ -111,6 +111,10 @@ function checkPhone() {
 
         showError($telefono, "El teléfono no debe contener letras.");
 
+    } else if (phoneData === phone) {
+
+        showError($telefono, "El teléfono ya existe, ingresa otro.");
+
     } else {
         showSuccess($telefono);
         valid = true;
@@ -120,7 +124,7 @@ function checkPhone() {
 
 }
 
-function checkEmail() {
+function checkEmail(emailData) {
 
     let valid = false; 
 
@@ -133,6 +137,10 @@ function checkEmail() {
     } else if ( !isValidEmail(email) ){
 
         showError($correo, "El correo debe ser válido.");
+
+    }else if ( emailData === email ) {
+
+        showError($correo, "El correo ya existe, ingresa otro.");
 
     } else {
         showSuccess($correo);
@@ -207,15 +215,22 @@ $formInput.addEventListener("submit", function(e) {
             //In this case if the request was successful execute the function containing
             //-response is the JSON that we get from the POST request
             success: function(response){
-
+                
                 var jsonData = JSON.parse(response);
                 console.log(jsonData);
 
                 //if JSON isn't empty means that exist other user with the same email o phone
                 if(jsonData.length !== 0){//Other option can be this line jQuery.isEmptyObject(jsonData) in if statement
-                    console.log("Este usuario ya existe");
+                
+                    // using map to check all the individual data
+                    jsonData.map(data => {
+
+                        console.log(data.correo, data.telefono);
+                        // We pass the required parameter that will validate if it already exists
+                        checkEmail(data.correo);
+                        checkPhone(data.telefono);
+                    })
                 }else{
-                    console.log("Este usuario esta disponible");
                     $formInput.submit();
                 }
             },
