@@ -42,19 +42,13 @@ function checkName(){
     
     let name = $nombre.value.trim();
     
-    if ( isEmpty(name) ){
-        
+    if ( isEmpty(name) )
         showError($nombre, "El campo no debe estar vacío");
-
-    } else if( !isBetween(name.length, MIN, MAX) ) {
-        
+    else if( !isBetween(name.length, MIN, MAX) )
         showError($nombre, "El nombre debe tener más de 1 letra y menos de 30.")
-
-    } else if( hasNumber(name) ){
-
+    else if( hasNumber(name) )
         showError($nombre, "El nombre no puede contener números.")
-
-    } else {
+    else {
         showSuccess($nombre);
         valid = true; 
     }
@@ -66,29 +60,21 @@ function checkName(){
 function checkLastNames() {
 
     let valid = false; 
-
     const MIN = 5, MAX = 60;
-    
     let lastnames = $apellidos.value.trim();
 
-    if ( isEmpty(lastnames) ){
-
+    if ( isEmpty(lastnames) )
         showError($apellidos, "El campo no debe estar vacío");
-
-    } else if ( !isBetween(lastnames.length, MIN, MAX) ){
-
+    else if ( !isBetween(lastnames.length, MIN, MAX) )
         showError($apellidos, "Los apellidos deben de tener al menos 5 letras y menos de 60");
-    } else if ( hasNumber(lastnames) ){
-
+    else if ( hasNumber(lastnames) )
         showError($apellidos, "Los apellidos no deben contener números");
-
-    } else {
+    else {
         showSuccess($apellidos);
         valid = true;
     }
 
     return valid;
-
 
 }
 
@@ -96,26 +82,15 @@ function checkPhone(phoneData) {
     
     const MIN = 10, MAX = 11;
     let valid = false;
-
     let phone = $telefono.value.trim();
 
-    if ( isEmpty(phone) ){
-
+    if ( isEmpty(phone) )
         showError($telefono, "El campo no debe estar vacío.");
-
-    } else if ( !isBetween(phone.length, MIN, MAX) ){
-
+    else if ( !isBetween(phone.length, MIN, MAX) )
         showError($telefono, "El teléfono debe tener un número válido.");
-
-    } else if ( hasLetter(phone) ){
-
+    else if ( hasLetter(phone) )
         showError($telefono, "El teléfono no debe contener letras.");
-
-    } else if (phoneData === phone) {
-
-        showError($telefono, "El teléfono ya existe, ingresa otro.");
-
-    } else {
+    else {
         showSuccess($telefono);
         valid = true;
     }
@@ -127,22 +102,13 @@ function checkPhone(phoneData) {
 function checkEmail(emailData) {
 
     let valid = false; 
-
     let email = $correo.value.trim();
 
-    if ( isEmpty(email) ){
-        
+    if ( isEmpty(email) )
         showError($correo, "El campo no debe estar vacío.");
-
-    } else if ( !isValidEmail(email) ){
-
+    else if ( !isValidEmail(email) )
         showError($correo, "El correo debe ser válido.");
-
-    }else if ( emailData === email ) {
-
-        showError($correo, "El correo ya existe, ingresa otro.");
-
-    } else {
+    else {
         showSuccess($correo);
         valid = true;
     }
@@ -170,38 +136,11 @@ $formInput.addEventListener("submit", function(e) {
     // this means that if formSubmit is true, then we go ahead with the submit.
     if ( formValid ) {
 
+        let nombre = $nombre.value.trim();
+        let apellidos = $apellidos.value.trim();
         let correo = $correo.value.trim();
         let telefono = $telefono.value.trim();
 
-        //we get the email and phone to send both to PHP file
-        
-        /*
-            INFO ABOUT AJAX REQUEST
-
-            Without jQuery, the request needs to be made in the following way
-
-            -Need to create a XMLHttpRequest object
-                
-                let objct = new XMLHttpRequest();
-
-            -then make the request where specifies the type of request
-            method: the type of request: GET or POST
-            url: the server (file) location
-            async: true (asynchronous) or false (synchronous)
-                
-                objct.open(method,url,async);
-
-            -Finally we send the request
-
-                objct.send();// In this we are'nt sending any data
-                
-                objct.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//encode the data that will be sent to the server from the browser
-                objct.send(data);//after encode the data we send the request
-        */
-
-       //we need to import JQuery to simplify the AJAX request
-        
-        //
         $.ajax({
             //url: the server (file) location
             url: '../includes/email-check.php',
@@ -210,29 +149,22 @@ $formInput.addEventListener("submit", function(e) {
             //Data to be sent to the server.
             // int this case contentType (default: 'application/x-www-form-urlencoded; charset=UTF-8') is included by default
             // also async (default: true) is included by default
-            data: {correo, telefono},
-
+            data: {nombre, apellidos, correo, telefono},
+            
             //In this case if the request was successful execute the function containing
-            //-response is the JSON that we get from the POST request
             success: function(response){
-                
-                var jsonData = JSON.parse(response);
+                // json is automatically parsed
+                var jsonData = response;
                 console.log(jsonData);
 
-                //if JSON isn't empty means that exist other user with the same email o phone
-                if(jsonData.length !== 0){//Other option can be this line jQuery.isEmptyObject(jsonData) in if statement
-                
-                    // using map to check all the individual data
-                    jsonData.map(data => {
-
-                        console.log(data.correo, data.telefono);
-                        // We pass the required parameter that will validate if it already exists
-                        checkEmail(data.correo);
-                        checkPhone(data.telefono);
-                    })
-                }else{
+                if(jsonData.email === true && jsonData.phone === true){
                     $formInput.submit();
-                }
+                }else{
+                    if(jsonData.email === false)
+                        showError($correo, "El correo ya existe, ingresa otro.");
+                    if(jsonData.phone === false)
+                        showError($telefono, "El teléfono ya existe, ingresa otro.");
+                }   
             },
             //Finally if the request was not succesfull we send the error to the console
             error: function(jqXHR,textStatus, errorThrown){
@@ -240,29 +172,23 @@ $formInput.addEventListener("submit", function(e) {
             }
         });
 
-        
-
     }
 
 });
 
 $formInput.addEventListener('blur', function (e) {
     
-    if ( e.target.id == "nombre" ) {
+    if ( e.target.id == "nombre" )
         checkName();
-    }
 
-    if ( e.target.id == "apellidos" ) {
+    if ( e.target.id == "apellidos" )
         checkLastNames();
-    }
 
-    if ( e.target.id == "telefono" ) {
+    if ( e.target.id == "telefono" )
         checkPhone();
-    }
 
-    if ( e.target.id == "correo" ){
+    if ( e.target.id == "correo" )
         checkEmail();
-    }
 
     e.preventDefault();
 }, true );
